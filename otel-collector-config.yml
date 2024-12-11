@@ -1,0 +1,29 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+
+connectors:
+  spanmetrics:
+    dimensions:
+      - name: gitHash
+        default: ${VERSION}
+
+exporters:
+  otlp:
+    endpoint: ${OTLP_ENDPOINT}
+    headers:
+      api-key: ${OTLP_API_KEY}
+
+processors:
+
+extensions:
+
+service:
+  pipelines:
+    traces/spanmetrics:
+      receivers: [ otlp ]
+      exporters: [ spanmetrics ]
+    metrics:
+      receivers: [ otlp, spanmetrics ]
+      exporters: [ otlp ]

@@ -1,0 +1,68 @@
+1. Run build the custom otel collector
+
+`docker build --no-cache .`
+
+2. find the image to run `docker images`
+
+3. run the image with versions
+
+All of the below scenarios worked on v108.0 of otelcollector/spanmetrics
+
+## Scenario 1: Only digits:
+
+`docker run -e VERSION=123 <image hash>`
+
+*Expected result*:
+Start correctly (or atleast not fail on the VERSION)
+
+*Actual result*: 
+```
+2024-12-11T15:44:04.882Z	warn	envprovider@v0.109.0/provider.go:51	Configuration references unset environment variable	{"name": "OTLP_ENDPOINT"}
+2024-12-11T15:44:04.882Z	warn	envprovider@v0.109.0/provider.go:51	Configuration references unset environment variable	{"name": "OTLP_API_KEY"}
+Error: failed to get config: cannot unmarshal the configuration: decoding failed due to the following error(s):
+
+error decoding 'connectors': error reading configuration for "spanmetrics": decoding failed due to the following error(s):
+
+'dimensions[0].default' expected type 'string', got unconvertible type 'int', value: '123'
+2024/12/11 15:44:04 collector server run finished with error: failed to get config: cannot unmarshal the configuration: decoding failed due to the following error(s):
+
+error decoding 'connectors': error reading configuration for "spanmetrics": decoding failed due to the following error(s):
+
+'dimensions[0].default' expected type 'string', got unconvertible type 'int', value: '123'
+```
+
+`docker run -e VERSION=123e4 <image hash>`
+
+*Expected result*:
+Start correctly (or atleast not fail on the VERSION)
+
+*Actual result*: 
+```
+...
+Error: failed to get config: cannot unmarshal the configuration: decoding failed due to the following error(s):
+
+error decoding 'connectors': error reading configuration for "spanmetrics": decoding failed due to the following error(s):
+
+'dimensions[0].default' expected type 'string', got unconvertible type 'float64', value: '1.23e+06'
+2024/12/11 15:45:40 collector server run finished with error: failed to get config: cannot unmarshal the configuration: decoding failed due to the following error(s):
+
+error decoding 'connectors': error reading configuration for "spanmetrics": decoding failed due to the following error(s):
+
+'dimensions[0].default' expected type 'string', got unconvertible type 'float64', value: '1.23e+06'
+```
+
+`docker run -e VERSION=v123 <image hash>`
+
+*Expected result*:
+Start correctly (or atleast not fail on the VERSION)
+
+*Actual result*: 
+
+Starts fine, giving next (expected errors):
+
+```
+...
+
+Error: invalid configuration: exporters::otlp: requires a non-empty "endpoint"
+2024/12/11 15:45:03 collector server run finished with error: invalid configuration: exporters::otlp: requires a non-empty "endpoint"
+```

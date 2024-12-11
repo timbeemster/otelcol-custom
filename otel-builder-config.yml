@@ -1,0 +1,16 @@
+dist:
+  name: otelcol-custom
+  output_path: ./bin
+
+exporters:
+  - gomod: go.opentelemetry.io/collector/exporter/otlpexporter v0.109.0
+
+receivers:
+  - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.109.0
+
+connectors:
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/connector/spanmetricsconnector v0.109.0
+
+extensions:
+
+processors:
